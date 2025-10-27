@@ -22,11 +22,13 @@ def load_and_prepare_data(file_path, agency_name):
         print(f"Error: No data found for agency '{agency_name}'")
         return None
 
+    # Create a proper 'Date' column
     df_agency['Date'] = pd.to_datetime(
         df_agency['Year'].astype(str) + '-' + df_agency['Month'].astype(str),
         errors='coerce'
     )
 
+    # Drop any rows where the date could not be created
     df_agency.dropna(subset=['Date'], inplace=True)
 
     print(f"Successfully loaded data for {agency_name}.")
@@ -47,6 +49,7 @@ def get_timeseries(df_agency, mode, metric):
         print(f"Error: No data found for Mode '{mode}' and Metric '{metric}'.")
         return None
 
+    # Prepare the time series data
     df_ts = df_mode.groupby('Date')[metric].sum().reset_index()
     df_ts = df_ts.set_index('Date')
     df_ts.index.freq = 'MS'  # 'MS' = Month Start frequency

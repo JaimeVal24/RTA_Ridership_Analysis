@@ -12,9 +12,9 @@ METRIC_TO_ANALYZE = 'Unlinked Passenger Trips'
 PRE_COVID_YEAR = 2019
 
 # --- Model & Forecast Parameters ---
-FORECAST_PERIOD = 90
-CONFIDENCE_LEVEL = 0.05
+FORECAST_PERIOD = 60
+CONFIDENCE_LEVEL = 0.20
+TRAIN_START_DATE = '2021-01-01'
 
 # --- Secondary Plot Parameters ---
-# Metrics to plot in the original analysis loop
 SECONDARY_METRICS = ['Vehicle Revenue Miles', 'VOMS']

@@ -1,5 +1,7 @@
 # --- main.py ---
 # Description: Main entry point for the RTA forecast analysis.
+#
+# *** CORRECTED to fix TypeError ***
 
 import config as cfg
 import data_loader as dl
@@ -14,12 +16,12 @@ def main():
     # 1. Load and Prepare Data
     df_agency = dl.load_and_prepare_data(cfg.DATA_FILE, cfg.AGENCY_NAME)
     if df_agency is None:
-        sys.exit("Failed to load data. Exiting.")
+        sys.exit("Error: Failed to load data. Exiting.")
 
     # 2. Get the specific time series for forecasting
     df_ts = dl.get_timeseries(df_agency, cfg.MODE_TO_ANALYZE, cfg.METRIC_TO_ANALYZE)
     if df_ts is None:
-        sys.exit("Failed to create time series. Exiting.")
+        sys.exit("Error: Failed to create time series. Exiting.")
 
     # 3. Calculate Pre-COVID Baseline
     pre_covid_level = fc.calculate_pre_covid_level(df_ts, cfg.METRIC_TO_ANALYZE, cfg.PRE_COVID_YEAR)
@@ -29,11 +31,21 @@ def main():
         df_ts,
         cfg.METRIC_TO_ANALYZE,
         cfg.FORECAST_PERIOD,
+        cfg.TRAIN_START_DATE,
         cfg.CONFIDENCE_LEVEL
     )
 
+    if forecast_df is None:
+        sys.exit("Error: Failed to generate forecast. Exiting.")
+
     # 5. Find Recovery Date
-    recovery_date = fc.find_recovery_date(forecast_df, pre_covid_level, cfg.FORECAST_PERIOD)
+    recovery_date = fc.find_recovery_date(
+        df_ts,
+        forecast_df,
+        pre_covid_level,
+        cfg.FORECAST_PERIOD,
+        cfg.METRIC_TO_ANALYZE
+    )
 
     # 6. Plot Forecast
     pl.plot_forecast(
@@ -45,7 +57,8 @@ def main():
         cfg.MODE_TO_ANALYZE,
         cfg.METRIC_TO_ANALYZE,
         cfg.OUTPUT_DIR,
-        cfg.PRE_COVID_YEAR
+        cfg.PRE_COVID_YEAR,
+        cfg.CONFIDENCE_LEVEL
     )
 
     # 7. Generate Secondary Plots

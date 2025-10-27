@@ -8,7 +8,7 @@ from tabulate import tabulate
 
 
 def plot_forecast(df_ts, forecast_df, conf_int_df, pre_covid_level,
-                  recovery_date, mode, metric, output_dir, baseline_year):
+                  recovery_date, mode, metric, output_dir, baseline_year, confidence_level):
     """
     Generates and saves the main forecast plot.
     """
@@ -21,13 +21,22 @@ def plot_forecast(df_ts, forecast_df, conf_int_df, pre_covid_level,
     # Plot forecast
     ax.plot(forecast_df.index, forecast_df['Forecast'], label='Forecast', color='red', linestyle='--')
 
+    # --- This section now uses the confidence_level variable ---
+
+    # Calculate the percentage
+    conf_percent = (1 - confidence_level) * 100
+
+    # Create the dynamic label
+    plot_label = f'{conf_percent:.0f}% Confidence Interval'
+
     # Plot confidence interval
     ax.fill_between(
         conf_int_df.index,
         conf_int_df['Lower CI'],
         conf_int_df['Upper CI'],
-        color='red', alpha=0.1, label='95% Confidence Interval'
+        color='red', alpha=0.1, label=plot_label  # <-- Uses the new label
     )
+    # --- End of modified section ---
 
     # Plot Pre-COVID Level
     if pre_covid_level is not None:
