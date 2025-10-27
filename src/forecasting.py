@@ -27,10 +27,6 @@ def calculate_pre_covid_level(df_ts, metric_name, year):
 
 
 def run_sarima_forecast(df_ts, metric_name, n_periods, train_start_date, confidence_level):
-    """
-    Finds the best SARIMA model using auto_arima and returns the forecast.
-    Trains *only* on data from train_start_date onwards.
-    """
 
     print(f"\nFinding best SARIMA model using data from {train_start_date} onwards...")
 
@@ -55,39 +51,33 @@ def run_sarima_forecast(df_ts, metric_name, n_periods, train_start_date, confide
             train_series,
             start_p=1, start_q=1,
             max_p=3, max_q=3,  # Keep p and q low to prevent overfitting
-            m=12,  # 12 months in a year
-            seasonal=True,  # Yes, look for seasonality
+            m=12,
+            seasonal=True,
 
-            # --- THESE ARE THE NEW "GUARDRAIL" CONSTRAINTS ---
-            d=1,  # FORCE d=1 (linear trend). Prevents the nosedive.
-            with_intercept=True,  # FORCE a "drift" term. This models the steady upward recovery.
-            D=0,  # FORCE D=0. Prevents unstable seasonal differencing.
-            # --- End of new constraints ---
+            d=1,
+            with_intercept=True,
+            D=0,
 
-            trace=True,  # Print models as it finds them
+            trace=True,
             error_action='ignore',
             suppress_warnings=True,
             stepwise=True
         )
 
-        # Note: auto_arima returns a *fitted* model,
-        # so you do not need to call .fit() separately.
 
         print("\n--- Best Model Found ---")
         print(auto_model.summary())
 
-        # --- End of new auto_arima section ---
 
     except Exception as e:
         print(f"Error during auto_arima model fitting: {e}")
         return None, None
 
-    # Generate forecast
     print(f"\nGenerating forecast for {n_periods} months...")
     forecast, conf_int = auto_model.predict(
         n_periods=n_periods,
         return_conf_int=True,
-        alpha=(1 - confidence_level)  # Note: auto_arima uses alpha, not 1-alpha
+        alpha=(1 - confidence_level)
     )
 
     forecast_index = pd.date_range(
