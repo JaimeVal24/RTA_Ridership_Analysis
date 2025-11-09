@@ -1,65 +1,71 @@
 # Time Series Analysis of Riverside Transportation Agency
 
-## The Big Question
+## Analysis Question
 
-The main goal of this project is to answer "Will Riverside's public transportation ridership ever get back to its pre-COVID levels?"
+We wanted to answer a simple but important question: **“Will Riverside's public transportation ridership ever get back to its pre-COVID levels?”**  
 
-To find out, we looked at data from the Department of Transportation, focusing on the **Riverside Transit Agency (RTA)**. We zoomed in on **"Unlinked Passenger Trips"** for the **Motorbus (MB)** service, since that's how most people get around.
+To investigate, we used data from the Department of Transportation, focusing on the **Riverside Transit Agency (RTA)**. Specifically, we looked at **“Unlinked Passenger Trips”** for **Motorbus (MB)** service, since this is the main way people get around.  
 
-First, we set our target: the "pre-COVID level," which we calculated as the monthly average from 2019. That number is **651,742 trips**.
+We set our benchmark as the **pre-COVID level**, calculated as the monthly average for 2019: **651,742 trips**.  
 
-All our models were trained on post-COVID data, starting from January 2021, to aim specifically for the recovery period after covid.
+All models were trained on **post-COVID data starting January 2021**, since our focus was on the recovery period after COVID.
 
-## Our Forecasting Tool: The SARIMA Model
+---
 
-**SARIMA** (Seasonal AutoRegressive Integrated Moving Average) was used to make the model to make our forecast. 
+## Our Forecasting Tool: SARIMA
 
-* **AR (AutoRegressive):** How this month's ridership is related to last month's.
-* **I (Integrated):** This part handles the overall trend. Is ridership generally going up, down, or staying flat?
-* **MA (Moving Average):** This helps the model learn from its own past forecast mistakes.
-* **S (Seasonal):** This is key for ridership. It looks for patterns that repeat every year (like a dip in summer or a rise in the fall).
+We used **SARIMA** (Seasonal AutoRegressive Integrated Moving Average) to build our forecast. Here’s what each part does:
 
-## The (Difficult) Hunt for a Good Model
+* **AR (AutoRegressive):** Captures how this month’s ridership depends on last month’s.  
+* **I (Integrated):** Tracks the overall trend—whether ridership is generally going up, down, or flat.  
+* **MA (Moving Average):** Helps correct past forecast errors.  
+* **S (Seasonal):** Detects repeating patterns throughout the year (like summer dips or fall rises).
 
-Finding the *right* SARIMA model was a journey. It's not enough to just make a forecast; the forecast needs to be statistically stable and make common sense.
+---
 
-The first fittings of the ARIMA model presented some difficulties. A very complex manual model and a wide-open `auto_arima` search were implemented. Both gave us models that were **unstable and overfit**.
+## Finding the Right Model
 
-The plot below demonstrates one of these models, where the model seems to deeply attach itself to the last few data points, and continues to dive lower in its predicted trend.
+Finding a good SARIMA model wasn’t easy. A forecast isn’t useful if it’s unstable or doesn’t make sense.  
+
+Our first attempts (both complex manual models and a wide `auto_arima` search) **overfit the data**. That means the model clung too closely to recent data points, producing unrealistic trends.  
 
 ![An unstable, overfit forecast showing a sharp nosedive.](![img.png](img.png))
 
-Apart from this model, some other struggles included large confidence interval, which essentially made the model useless, as they spanned nearly the entireity of the range of values. 
-Attempting to narrow down this confidence interval to create a more reliable forecast was also a priority.
+Other problems included **huge confidence intervals**, which made predictions almost meaningless. Narrowing them for a more reliable forecast was a priority.
+
+---
 
 ## The Final Model
 
-To fix this, the `autoarima` function was given some restircitions in order to avoid overfitting; Forcing it to look for a **stable, linear trend** (`d=1`) and to check if that trend was *actually* growing (`with_intercept=True`).
+To fix overfitting, we restricted the `auto_arima` search to find a **stable, linear trend** (`d=1`) and checked whether the trend was actually increasing (`with_intercept=True`).  
 
-This time, it worked. The search found a simple, stable, and statistically model: **`SARIMAX(1, 1, 0)x(1, 0, 0, 12)`**.
+This worked. The final model was simple, stable, and statistically sound:  
 
-This model's diagnostic tests were good (`Prob(Q) = 0.95`, `Prob(JB) = 0.93`), which means it successfully captured all the real patterns in the data, leaving behind only random noise.
+**`SARIMAX(1, 1, 0)x(1, 0, 0, 12)`**  
 
-Looking at the intercept and its stastical signifcance gives some incite to the overal trend of the prediction.
+Diagnostic tests confirmed it captured real patterns, leaving only random noise:  
 
-| Term | Coefficient | p-value | What it Means |
+* `Prob(Q) = 0.95`  
+* `Prob(JB) = 0.93`  
+
+Looking at the coefficients helps interpret the trend:
+
+| Term | Coefficient | p-value | Meaning |
 |:---|---:|---:|:---|
-| **`intercept`** | -2399.78 | **0.677** | **NOT Significant** |
+| **`intercept`** | -2399.78 | **0.677** | Not significant (no growth) |
 | `ar.L1` | -0.2979 | 0.020 | Significant |
 | `ar.S.L12` | 0.3703 | 0.012 | Significant |
 
-The **`intercept`** is the term that represents the "drift," or the average monthly **growth**. Its p-value was **0.677**.
+The **intercept** represents the average monthly growth. With a **p-value of 0.677**, it’s not statistically significant. In other words, **there’s no evidence of real growth**—the recovery seen in 2021–2023 has stalled.
 
- The model signifies that there is no evidence of any real growth. The recovery trend we saw from 2021-2023 has stalled, as opposed to what one might assume if you were to look at the collected data from the past few years.
+---
 
-## The Answer: So, Will We Recover?
+## The Answer: Will Ridership Recover?
 
-**Based on the data, the model's forecast is NO.**
+**The short answer: no.**  
 
-Because the model found no statistical evidence of an upward trend, it cannot project one into the future. Instead, it projects a **flat forecast**. It just takes the current ridership level and projects it forward, adding the normal seasonal ups and downs.
-
-The plot below shows this final, stable forecast. As you can see, the red forecast line isn't trending up. It stays flat, never getting close to the green "Pre-COVID" line.
+Since the model detected no upward trend, it forecasts a **flat ridership level** into the future, with only seasonal fluctuations.  
 
 ![The final, stable forecast, showing a flat trend that does not reach the pre-COVID baseline.](![img_1.png](img_1.png))
 
-According to this model, it does not seem like we will be recovering any time soon.
+The red forecast line stays flat and never reaches the green **pre-COVID baseline**. According to this model, Riverside’s public transit ridership **does not seem likely to recover anytime soon**.
