@@ -62,7 +62,7 @@ The **intercept** represents the average monthly growth. With a **p-value of 0.6
 
 ## The Answer: Will Ridership Recover?
 
-**The short answer: no.**  
+**Short answer: no.**  
 
 Since the model detected no upward trend, it forecasts a **flat ridership level** into the future, with only seasonal fluctuations.  
 
