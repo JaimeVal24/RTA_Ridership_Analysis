@@ -74,6 +74,8 @@ The interactive map reveals significant **Transit Deserts** (visualized in **Red
 * **🟢 Green Lines (< 400m):** High accessibility (approx. 5 min walk).
 * **🔴 Red Lines (> 800m):** Poor accessibility (approx. 10+ min walk).
 
+Pink lines signify Euclidean distance from all APNs to the nearest available bus stop.
+
 ### Conclusion
 The Time Series model predicts **no significant growth**, and the Spatial Analysis suggests that **physical accessibility barriers** may be a limiting factor. Without infrastructure changes to solve the First-Mile/Last-Mile gap, ridership recovery may effectively hit a ceiling.
 
