@@ -1,8 +1,8 @@
 # Riverside Transit Recovery Analysis 
 
-### [Click Here to View the Interactive Network Analysis Map](https://JaimeVal24.github.io/RTA_ANALYSIS/map/)
+### [Click Here to View the Interactive Network Analysis Map]([https://JaimeVal24.github.io/RTA_ANALYSIS/map/](https://jaimeval24.github.io/TimeSeriesAnalysisDOT/map/))
 
-<a href="https://JaimeVal24.github.io/RTA_ANALYSIS/map/">
+<a href="[https://JaimeVal24.github.io/RTA_ANALYSIS/map/"](https://jaimeval24.github.io/TimeSeriesAnalysisDOT/map/)>
   <img width="1511" alt="Screenshot 2025-11-29 at 2 42 06 PM" src="https://github.com/user-attachments/assets/d5c0b433-1e55-4640-b133-f90f848ba910">
 </a>
 
