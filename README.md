@@ -2,7 +2,8 @@
 
 ### 🗺️ [Click Here to View the Interactive Network Analysis Map](https://JaimeVal24.github.io/RTA_ANALYSIS/map/)
 
-[![Interactive Map Preview](map_preview.png)](https://JaimeVal24.github.io/RTA_ANALYSIS/map/)
+[![Interactive Map Preview](<img width="1511" height="906" alt="Screenshot 2025-11-29 at 2 42 06 PM" src="https://github.com/user-attachments/assets/d5c0b433-1e55-4640-b133-f90f848ba910" />)](https://JaimeVal24.github.io/RTA_ANALYSIS/map/)
+
 
 ---
 
