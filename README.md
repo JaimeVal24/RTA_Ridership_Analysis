@@ -1,4 +1,4 @@
-# Riverside Transit Recovery Analysis 
+# Riverside Transit Recovery Analysis
 
 ### [Click Here to View the Interactive Network Analysis Map](https://jaimeval24.github.io/TimeSeriesAnalysisDOT/map/)
 
@@ -29,10 +29,12 @@ We used **SARIMA** (Seasonal AutoRegressive Integrated Moving Average) to model 
 * **S (Seasonal):** Detects repeating yearly patterns (summer dips, school-year peaks).
 
 ### Model Selection Process
-Finding a stable model was challenging. Early attempts using complex manual parameters and broad `auto_arima` searches resulted in **overfitting**. The models clung too closely to recent noise, producing unrealistic nosedives and massive confidence intervals.
+Finding a stable model was challenging. A forecast isn’t useful if it’s unstable or doesn’t make sense.
 
-![Overfit Model Example](img.png)
-*> An example of an early, unstable model showing an unrealistic crash.*
+Our first attempts (using complex manual parameters and a wide `auto_arima` search) **overfit the data**. The models clung too closely to recent noise rather than the overall trend.
+
+**The Problem:**
+Instead of a stable recovery, early models produced unrealistic forecasts, often predicting a **sharp, immediate nosedive** back to zero or exploding confidence intervals that made predictions meaningless. Narrowing the scope to a more reliable, simple forecast became our priority.
 
 ### The Final Model
 To correct this, we restricted the search to find a **stable, linear trend** (`d=1`) and tested for a positive intercept. The result was a statistically sound model:
