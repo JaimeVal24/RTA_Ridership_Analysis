@@ -54,7 +54,7 @@ Diagnostic tests confirmed the model captured the signal effectively:
 | `ar.S.L12` | 0.3703 | 0.012 | Significant |
 
 ### The Verdict: Will it Recover?
-**Short answer: No.**
+**Unfortunately, the data doesn't seem to point to a recovery, at least not in the coming years.**
 
 The intercept p-value of **0.677** indicates that **there is no statistical evidence of growth.** The recovery trend seen in 2021–2023 has stalled. The model forecasts a flat trend line that stays significantly below the green pre-COVID baseline.
 
