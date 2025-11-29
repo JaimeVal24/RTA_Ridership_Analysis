@@ -1,71 +1,95 @@
-# Time Series Analysis of Riverside Transportation Agency
+# Riverside Transit Recovery Analysis 
 
-## Analysis Question
+### 🗺️ [Click Here to View the Interactive Network Analysis Map](https://JaimeVal24.github.io/RTA_ANALYSIS/map/)
 
-We wanted to answer a simple but important question: **“Will Riverside's public transportation ridership ever get back to its pre-COVID levels?”**  
-
-To investigate, we used data from the Department of Transportation, focusing on the **Riverside Transit Agency (RTA)**. Specifically, we looked at **“Unlinked Passenger Trips”** for **Motorbus (MB)** service, since this is the main way people get around.  
-
-We set our benchmark as the **pre-COVID level**, calculated as the monthly average for 2019: **651,742 trips**.  
-
-All models were trained on **post-COVID data starting January 2021**, since our focus was on the recovery period after COVID.
+[![Interactive Map Preview](map_preview.png)](https://JaimeVal24.github.io/RTA_ANALYSIS/map/)
 
 ---
 
-## Our Forecasting Tool: SARIMA
+## 1. The Research Question
+**“Will Riverside's public transportation ridership ever get back to its pre-COVID levels?”**
 
-We used **SARIMA** (Seasonal AutoRegressive Integrated Moving Average) to build our forecast. Here’s what each part does:
+To investigate, we used data from the Department of Transportation, focusing on the **Riverside Transit Agency (RTA)**. Specifically, we analyzed **“Unlinked Passenger Trips”** for **Motorbus (MB)** service, as this is the primary mode of transit in the region.
 
-* **AR (AutoRegressive):** Captures how this month’s ridership depends on last month’s.  
-* **I (Integrated):** Tracks the overall trend—whether ridership is generally going up, down, or flat.  
-* **MA (Moving Average):** Helps correct past forecast errors.  
-* **S (Seasonal):** Detects repeating patterns throughout the year (like summer dips or fall rises).
-
----
-
-## Finding the Right Model
-
-Finding a good SARIMA model wasn’t easy. A forecast isn’t useful if it’s unstable or doesn’t make sense.  
-
-Our first attempts (both complex manual models and a wide `auto_arima` search) **overfit the data**. That means the model clung too closely to recent data points, producing unrealistic trends.  
-
-![An unstable, overfit forecast showing a sharp nosedive.](![img.png](img.png))
-
-Other problems included **huge confidence intervals**, which made predictions almost meaningless. Narrowing them for a more reliable forecast was a priority.
+* **Benchmark:** Pre-COVID levels (2019 Monthly Average): **651,742 trips**.
+* **Training Data:** Post-COVID era starting **January 2021**.
 
 ---
 
-## The Final Model
+## 2. Part I: Time Series Forecasting (SARIMA)
 
-To fix overfitting, we restricted the `auto_arima` search to find a **stable, linear trend** (`d=1`) and checked whether the trend was actually increasing (`with_intercept=True`).  
+We used **SARIMA** (Seasonal AutoRegressive Integrated Moving Average) to model the recovery trajectory.
 
-This worked. The final model was simple, stable, and statistically sound:  
+### Methodology
+* **AR (AutoRegressive):** Captures how this month’s ridership depends on the previous months.
+* **I (Integrated):** Tracks the overall trend (up, down, or flat).
+* **MA (Moving Average):** Corrects past forecast errors.
+* **S (Seasonal):** Detects repeating yearly patterns (summer dips, school-year peaks).
 
-**`SARIMAX(1, 1, 0)x(1, 0, 0, 12)`**  
+### Model Selection Process
+Finding a stable model was challenging. Early attempts using complex manual parameters and broad `auto_arima` searches resulted in **overfitting**. The models clung too closely to recent noise, producing unrealistic nosedives and massive confidence intervals.
 
-Diagnostic tests confirmed it captured real patterns, leaving only random noise:  
+![Overfit Model Example](img.png)
+*> An example of an early, unstable model showing an unrealistic crash.*
 
-* `Prob(Q) = 0.95`  
-* `Prob(JB) = 0.93`  
+### The Final Model
+To correct this, we restricted the search to find a **stable, linear trend** (`d=1`) and tested for a positive intercept. The result was a statistically sound model:
 
-Looking at the coefficients helps interpret the trend:
+**`SARIMAX(1, 1, 0)x(1, 0, 0, 12)`**
 
-| Term | Coefficient | p-value | Meaning |
+Diagnostic tests confirmed the model captured the signal effectively:
+* `Prob(Q) = 0.95` (Residuals are white noise)
+* `Prob(JB) = 0.93` (Residuals are normally distributed)
+
+**Coefficient Analysis:**
+
+| Term | Coefficient | p-value | Interpretation |
 |:---|---:|---:|:---|
-| **`intercept`** | -2399.78 | **0.677** | Not significant (no growth) |
+| **`intercept`** | -2399.78 | **0.677** | **Not Significant** |
 | `ar.L1` | -0.2979 | 0.020 | Significant |
 | `ar.S.L12` | 0.3703 | 0.012 | Significant |
 
-The **intercept** represents the average monthly growth. With a **p-value of 0.677**, it’s not statistically significant. In other words, **there’s no evidence of real growth**—the recovery seen in 2021–2023 has stalled.
+### The Verdict: Will it Recover?
+**Short answer: No.**
+
+The intercept p-value of **0.677** indicates that **there is no statistical evidence of growth.** The recovery trend seen in 2021–2023 has stalled. The model forecasts a flat trend line that stays significantly below the green pre-COVID baseline.
+
+![Final Forecast](img_1.png)
 
 ---
 
-## The Answer: Will Ridership Recover?
+## 3. Part II: Spatial Analysis (Why is it stalling?)
 
-**Short answer: no.**  
+If the data shows recovery has stalled, the next question is **"Why?"** To investigate structural barriers, we expanded the study to include a **Geospatial Network Analysis**.
 
-Since the model detected no upward trend, it forecasts a **flat ridership level** into the future, with only seasonal fluctuations.  
+Using **QGIS** and **Graph Theory algorithms** (`v.net.distance` and `QNEAT3`), we visualized the "First-Mile/Last-Mile" problem in Riverside. Unlike simple straight-line radius buffers, this analysis calculates the **actual walking distance** along the street network from residential properties (APN) to the nearest bus stop.
 
-![The final, stable forecast, showing a flat trend that does not reach the pre-COVID baseline.](![img_1.png](img_1.png))
+### Key Spatial Findings
+The interactive map reveals significant **Transit Deserts** (visualized in **Red/Orange**) where residents are geographically close to transit but physically disconnected due to street layouts (e.g., cul-de-sacs, lack of pedestrian infrastructure).
 
-The red forecast line stays flat and never reaches the green **pre-COVID baseline**. According to this model, Riverside’s public transit ridership **does not seem likely to recover anytime soon**.
+* **🟢 Green Lines (< 400m):** High accessibility (approx. 5 min walk).
+* **🔴 Red Lines (> 800m):** Poor accessibility (approx. 10+ min walk).
+
+### Conclusion
+The Time Series model predicts **no significant growth**, and the Spatial Analysis suggests that **physical accessibility barriers** may be a limiting factor. Without infrastructure changes to solve the First-Mile/Last-Mile gap, ridership recovery may effectively hit a ceiling.
+
+---
+
+## 🛠️ Tech Stack
+
+**Data Science & Forecasting**
+* Python (Pandas, NumPy)
+* `statsmodels` (SARIMAX)
+* `pmdarima` (Auto ARIMA)
+* Matplotlib / Seaborn
+
+**Geospatial Analysis**
+* **QGIS 3.40**
+* **GRASS GIS** (`v.net.distance` algorithm)
+* **QNEAT3 Plugin** (OD Matrices)
+* **OpenStreetMap** (Road Network Data)
+* **qgis2web** (Web Map Export)
+
+---
+
+*Analysis by Jaime Val. 2025.*
