@@ -8,7 +8,7 @@
 
 ---
 
-## 1. The Research Question
+## 1. Research Question
 **“Will Riverside's public transportation ridership ever get back to its pre-COVID levels?”**
 
 To investigate, we used data from the Department of Transportation, focusing on the **Riverside Transit Agency (RTA)**. Specifically, we analyzed **“Unlinked Passenger Trips”** for **Motorbus (MB)** service, as this is the primary mode of transit in the region.
@@ -33,10 +33,10 @@ Finding a stable model was challenging. A forecast isn’t useful if it’s unst
 
 Our first attempts (using complex manual parameters and a wide `auto_arima` search) **overfit the data**. The models clung too closely to recent noise rather than the overall trend.
 
-**The Problem:**
+**Problem:**
 Instead of a stable recovery, early models produced unrealistic forecasts, often predicting a **sharp, immediate nosedive** back to zero or exploding confidence intervals that made predictions meaningless. Narrowing the scope to a more reliable, simple forecast became our priority.
 
-### The Final Model
+### Final Model
 To correct this, we restricted the search to find a **stable, linear trend** (`d=1`) and tested for a positive intercept. The result was a statistically sound model:
 
 **`SARIMAX(1, 1, 0)x(1, 0, 0, 12)`**
@@ -53,7 +53,7 @@ Diagnostic tests confirmed the model captured the signal effectively:
 | `ar.L1` | -0.2979 | 0.020 | Significant |
 | `ar.S.L12` | 0.3703 | 0.012 | Significant |
 
-### The Verdict: Will it Recover?
+### Verdict: Will it Recover?
 **Unfortunately, the data doesn't seem to point to a recovery, at least not in the coming years.**
 
 The intercept p-value of **0.677** indicates that **there is no statistical evidence of growth.** The recovery trend seen in 2021–2023 has stalled. The model forecasts a flat trend line that stays significantly below the green pre-COVID baseline.
@@ -62,7 +62,7 @@ The intercept p-value of **0.677** indicates that **there is no statistical evid
 
 ---
 
-## 3. Part II: Spatial Analysis (Why is it stalling?)
+## 3. Part II: Spatial Analysis
 
 If the data shows recovery has stalled, the next question is **"Why?"** To investigate structural barriers, we expanded the study to include a **Geospatial Network Analysis**.
 
